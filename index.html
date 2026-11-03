@@ -149,6 +149,20 @@
       border-color: #60a5fa;
     }
 
+    .btn-share {
+      background: linear-gradient(135deg, #2563eb, #0284c7);
+      border-color: #38bdf8;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-share:hover {
+      background: linear-gradient(135deg, #1d4ed8, #0369a1);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
+    }
+
     .btn-success {
       background: rgba(16, 185, 129, 0.15);
       border-color: rgba(16, 185, 129, 0.4);
@@ -982,6 +996,12 @@
           🔒 Bloqueado (Destravar)
         </button>
 
+        <!-- NOVO: Copiar Link com Estado Exato -->
+        <button class="btn btn-share" onclick="copyShareableLink()" title="Gera e copia o link direto que abre exatamente com a sua organização de fotos atual para qualquer pessoa!">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+          🔗 Copiar Link Pronto
+        </button>
+
         <!-- Ações restritas (só aparecem quando destravado) -->
         <button class="btn btn-primary edit-only" onclick="openNewCategoryModal()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -992,7 +1012,7 @@
           Adicionar Fotos
         </button>
 
-        <!-- Ações públicas de consulta -->
+        <!-- Ações de consulta -->
         <button class="btn btn-success" onclick="openReportModal()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
           Gerar Relatório / Lista
@@ -1043,7 +1063,7 @@
       <div style="display: flex; align-items: center; gap: 10px;">
         <span id="lockBannerIcon">🔒</span>
         <span id="lockBannerText">
-          <strong>Modo de Leitura / Visualização:</strong> As fotos e os cards estão protegidos contra alterações acidentais. Para arrastar fotos, criar novos locais ou reordenar cards, clique em <strong>Destravar</strong> e digite a senha.
+          <strong>Modo de Leitura / Visualização:</strong> As fotos e os cards estão protegidos contra alterações. Para editar fotos ou reordenar cards, clique em <strong>Destravar</strong> e digite a senha.
         </span>
       </div>
       <button id="lockBannerBtn" class="btn btn-warning" style="padding: 4px 12px; font-size: 0.8rem;" onclick="handleLockToggle()">
@@ -1110,6 +1130,32 @@
       <div class="modal-footer">
         <button class="btn" onclick="closePasswordModal()">Cancelar</button>
         <button class="btn btn-primary" onclick="submitPassword()">Destravar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Compartilhar Link Pronto -->
+  <div class="modal-backdrop" id="shareModal">
+    <div class="modal-window" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3>🔗 Link Compartilhável da Organização</h3>
+        <button class="icon-btn" onclick="closeShareModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: #94a3b8;">
+          Este link contém a <strong>ordem exata dos cards e a classificação de todas as fotos</strong> que você fez. Quem abrir este link verá tudo exatamente como está na sua tela agora, em modo seguro de leitura!
+        </p>
+        <div class="form-group">
+          <label>Link para Copiar e Enviar no WhatsApp ou E-mail:</label>
+          <input type="text" id="shareLinkInput" class="form-input" readonly onclick="this.select()">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeShareModal()">Fechar</button>
+        <button class="btn btn-primary" onclick="copyFromShareModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copiar Link
+        </button>
       </div>
     </div>
   </div>
@@ -1193,7 +1239,7 @@
 
   <!-- Scripts -->
   <script>
-    // Senha de edição solicitada pelo usuário
+    // Senha de edição
     const ADMIN_PASSWORD = "Pandora01@";
 
     // Manifesto padrão com as 57 fotos
@@ -2034,27 +2080,30 @@
         console.log('Usando manifesto embutido no index.html');
       }
 
-      // Tenta carregar estado persistido
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          appState = JSON.parse(saved);
-          // Atualiza links se defaultPhotos tiver URLs atualizadas
-          if (defaultPhotos && defaultPhotos.length > 0) {
-            const map = new Map(defaultPhotos.map(p => [p.id, p]));
-            appState.photos.forEach(p => {
-              if (map.has(p.id)) {
-                p.thumbUrl = map.get(p.id).thumbUrl;
-                p.fullUrl = map.get(p.id).fullUrl;
-              }
-            });
+      // 1. Tenta carregar organização compartilhada via Link (Hash #org=...)
+      const loadedFromHash = loadStateFromHash();
+
+      // 2. Se não veio por link compartilhado, tenta carregar do localStorage
+      if (!loadedFromHash) {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          try {
+            appState = JSON.parse(saved);
+            if (defaultPhotos && defaultPhotos.length > 0) {
+              const map = new Map(defaultPhotos.map(p => [p.id, p]));
+              appState.photos.forEach(p => {
+                if (map.has(p.id)) {
+                  p.thumbUrl = map.get(p.id).thumbUrl;
+                  p.fullUrl = map.get(p.id).fullUrl;
+                }
+              });
+            }
+          } catch (e) {
+            resetStateFromDefault();
           }
-        } catch (e) {
-          console.error('Erro ao ler estado do localStorage, restaurando padrão:', e);
+        } else {
           resetStateFromDefault();
         }
-      } else {
-        resetStateFromDefault();
       }
 
       applyLockState();
@@ -2079,6 +2128,15 @@
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
       updateStats();
+
+      // Atualiza o hash da URL em tempo real para que qualquer cópia da barra de endereço já leve a ordem!
+      try {
+        const hash = generateShareableHash();
+        if (hash) {
+          history.replaceState(null, '', '#' + hash);
+        }
+      } catch (e) {}
+
       const saveEl = document.getElementById('save-status');
       if (saveEl) {
         const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -2090,6 +2148,98 @@
           saveEl.style.background = 'rgba(16, 185, 129, 0.1)';
         }, 500);
       }
+    }
+
+    // Compartilhamento com Link Dinâmico (Garante que a outra pessoa veja a mesma ordem exata)
+    function generateShareableHash() {
+      const catMap = new Map();
+      appState.categories.forEach((c, idx) => catMap.set(c, idx));
+
+      const mapping = {};
+      appState.photos.forEach(p => {
+        if (p.category && p.category !== 'Sem Categoria' && catMap.has(p.category)) {
+          mapping[p.id] = catMap.get(p.category);
+        }
+      });
+
+      const payload = {
+        c: appState.categories,
+        m: mapping
+      };
+
+      const jsonStr = JSON.stringify(payload);
+      // UTF-8 to Base64 seguro para URL
+      const b64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
+      return 'org=' + encodeURIComponent(b64);
+    }
+
+    function getFullShareableUrl() {
+      const hash = generateShareableHash();
+      let base = 'https://digodixty.github.io/casa-peruibe-fotos/';
+      if (window.location.origin && window.location.origin.includes('http')) {
+        base = window.location.origin + window.location.pathname;
+      }
+      return base + '#' + hash;
+    }
+
+    function copyShareableLink() {
+      const url = getFullShareableUrl();
+      document.getElementById('shareLinkInput').value = url;
+      document.getElementById('shareModal').classList.add('active');
+
+      // Tenta copiar direto
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('🔗 Link copiado para a área de transferência!', 'success');
+      }).catch(() => {});
+    }
+
+    function closeShareModal() {
+      document.getElementById('shareModal').classList.remove('active');
+    }
+
+    function copyFromShareModal() {
+      const input = document.getElementById('shareLinkInput');
+      input.select();
+      navigator.clipboard.writeText(input.value).then(() => {
+        showToast('🔗 Link copiado com sucesso!', 'success');
+        closeShareModal();
+      });
+    }
+
+    function loadStateFromHash() {
+      if (!window.location.hash) return false;
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const orgParam = params.get('org');
+      if (!orgParam) return false;
+
+      try {
+        const jsonStr = decodeURIComponent(Array.prototype.map.call(atob(decodeURIComponent(orgParam)), (c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        const payload = JSON.parse(jsonStr);
+
+        if (payload && payload.c && Array.isArray(payload.c)) {
+          appState.categories = payload.c;
+          appState.photos = JSON.parse(JSON.stringify(defaultPhotos));
+          
+          if (payload.m) {
+            appState.photos.forEach(p => {
+              if (payload.m.hasOwnProperty(p.id)) {
+                const catIdx = payload.m[p.id];
+                if (catIdx >= 0 && catIdx < payload.c.length) {
+                  p.category = payload.c[catIdx];
+                }
+              } else {
+                p.category = 'Sem Categoria';
+              }
+            });
+          }
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+          return true;
+        }
+      } catch (e) {
+        console.warn('Erro ao decodificar hash do link:', e);
+      }
+      return false;
     }
 
     function updateStats() {
@@ -2232,7 +2382,6 @@
         card.dataset.category = catName;
         card.dataset.index = index;
 
-        // Se destravado, permite arrastar o card para reordenar
         if (isUnlocked) {
           card.setAttribute('draggable', 'true');
           card.addEventListener('dragstart', handleCardDragStart);
@@ -2267,7 +2416,6 @@
             <!-- Ações do Card -->
             <div class="card-actions">
               ${isUnlocked ? `
-                <!-- Botões de Reordenação ◀ e ▶ -->
                 <button class="icon-btn" onclick="moveCategoryOrder(${index}, -1)" title="Mover para esquerda" ${isFirst ? 'disabled' : ''}>◀</button>
                 <button class="icon-btn" onclick="moveCategoryOrder(${index}, 1)" title="Mover para direita" ${isLast ? 'disabled' : ''}>▶</button>
                 <button class="icon-btn" onclick="editCategoryName('${escapeQuotes(catName)}')" title="Renomear">
@@ -2307,7 +2455,7 @@
       });
     }
 
-    // Reordenação de Cards (Setas e Drag & Drop)
+    // Reordenação de Cards
     function moveCategoryOrder(index, direction) {
       if (!isUnlocked) return;
       const targetIndex = index + direction;
@@ -2322,7 +2470,6 @@
 
     function handleCardDragStart(e) {
       if (!isUnlocked) { e.preventDefault(); return; }
-      // Só inicia arrasto se não começou dentro de uma foto
       if (e.target.closest('.thumb-item')) return;
 
       const card = e.currentTarget;
@@ -2382,7 +2529,6 @@
         item.setAttribute('draggable', 'true');
       }
 
-      // Usa fallback local se offline ou preferência
       const imgSrc = photo.thumbUrl || photo.localThumb;
 
       item.innerHTML = `
@@ -2406,13 +2552,11 @@
         </div>
       `;
 
-      // Clique direto na foto quando travado abre o Lightbox
       item.addEventListener('click', (e) => {
         if (e.target.closest('button')) return;
         openLightbox(photo.id);
       });
 
-      // Eventos Drag quando destravado
       if (isUnlocked) {
         item.addEventListener('dragstart', (e) => {
           draggedPhotoId = photo.id;

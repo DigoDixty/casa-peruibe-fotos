@@ -12,3 +12,4 @@ Aplicação web interativa para visualização, classificação e organização 
 * Drag & drop de fotos entre ambientes.
 * Visualização em tela cheia (Lightbox) com zoom e alta resolução.
 * Geração de relatórios com links diretos no Azure para envio via WhatsApp ou laudo.
+
