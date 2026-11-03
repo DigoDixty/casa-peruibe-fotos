@@ -1,0 +1,9 @@
+# Fotos originais e miniaturas ficam no Azure Blob Storage (economiza banda e espaço no Git)
+Fotos/
+thumbnails/
+
+# Scripts locais e temporários
+build_index.py
+upload_azure.py
+.DS_Store
+*.log

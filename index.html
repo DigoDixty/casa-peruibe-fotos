@@ -1,0 +1,2849 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizador de Fotos - Casa Peruíbe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --card-bg: #151c28;
+      --card-header: #1c2536;
+      --border: #232f45;
+      --border-hover: #3b82f6;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent: #38bdf8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+      --thumb-size: 130px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      background: rgba(21, 28, 40, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 14px 28px;
+    }
+
+    .header-content {
+      max-width: 1800px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #2563eb, #38bdf8);
+      color: white;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .cloud-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .cloud-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #34d399;
+      box-shadow: 0 0 8px #34d399;
+    }
+
+    /* Actions Bar */
+    .actions-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: #27354a;
+      border-color: #475569;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      border-color: #3b82f6;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      border-color: #60a5fa;
+    }
+
+    .btn-success {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+
+    .btn-success:hover {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #fff;
+    }
+
+    .btn-warning {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+    }
+
+    .btn-warning:hover {
+      background: rgba(245, 158, 11, 0.25);
+      border-color: #f59e0b;
+      color: #fff;
+    }
+
+    .btn-lock {
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+    }
+
+    .btn-lock.locked {
+      background: #292524;
+      border: 1px solid #78716c;
+      color: #f59e0b;
+    }
+
+    .btn-lock.locked:hover {
+      background: #44403c;
+      border-color: #f59e0b;
+    }
+
+    .btn-lock.unlocked {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid #10b981;
+      color: #34d399;
+    }
+
+    .btn-lock.unlocked:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      color: #f87171;
+    }
+
+    /* Top Stats */
+    .stats-bar {
+      background: #101622;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 28px;
+    }
+
+    .stats-content {
+      max-width: 1800px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .stats-items {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-pill strong {
+      color: #f8fafc;
+      font-weight: 600;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 12px;
+      width: 260px;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+
+    .search-box input::placeholder {
+      color: #64748b;
+    }
+
+    .zoom-slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .zoom-slider-wrap input[type=range] {
+      width: 90px;
+      accent-color: var(--primary);
+    }
+
+    /* Main Workspace */
+    main {
+      flex: 1;
+      padding: 24px 28px;
+      max-width: 1800px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Lock banner notification */
+    .lock-banner {
+      background: #1e2330;
+      border: 1px solid #334155;
+      border-left: 4px solid #f59e0b;
+      border-radius: 10px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+
+    .lock-banner.unlocked-banner {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.3);
+      border-left-color: #10b981;
+      color: #a7f3d0;
+    }
+
+    /* Unassigned Photos Shelf / Drawer */
+    .unassigned-section {
+      background: #131a26;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    .badge-count {
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid #334155;
+    }
+
+    .badge-count.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #3b82f6;
+    }
+
+    .unassigned-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      min-height: 140px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #0d121c;
+      border-radius: 10px;
+      border: 2px dashed #223049;
+      transition: all 0.2s ease;
+    }
+
+    .unassigned-grid.dragover {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+      gap: 22px;
+    }
+
+    .location-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .location-card:hover {
+      border-color: #334566;
+    }
+
+    .location-card.card-dragging {
+      opacity: 0.4;
+      transform: scale(0.98);
+      border: 2px dashed #38bdf8;
+    }
+
+    .location-card.card-dragover {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+    }
+
+    .card-head {
+      background: var(--card-header);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      gap: 8px;
+    }
+
+    .card-drag-handle {
+      cursor: grab;
+      color: #64748b;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .card-drag-handle:hover {
+      color: #fff;
+      background: #28354b;
+    }
+
+    .card-drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-title.clickable {
+      cursor: pointer;
+    }
+
+    .card-title.clickable:hover {
+      color: var(--accent);
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 5px 7px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      font-size: 0.85rem;
+    }
+
+    .icon-btn:hover:not(:disabled) {
+      background: #28354b;
+      color: #fff;
+    }
+
+    .icon-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .icon-btn.danger:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .card-body {
+      padding: 14px;
+      flex: 1;
+      min-height: 220px;
+      background: #111723;
+      border-radius: 0 0 14px 14px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dropzone {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 10px;
+      min-height: 180px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 2px dashed transparent;
+      transition: all 0.2s ease;
+    }
+
+    .dropzone.empty {
+      border: 2px dashed #223049;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dropzone.dragover {
+      border-color: #3b82f6;
+      background: rgba(37, 99, 235, 0.08);
+    }
+
+    .empty-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #64748b;
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 24px;
+      user-select: none;
+    }
+
+    /* Thumbnail Item */
+    .thumb-item {
+      position: relative;
+      width: var(--thumb-size);
+      height: var(--thumb-size);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .thumb-item.can-drag {
+      cursor: grab;
+    }
+
+    .thumb-item.can-drag:active {
+      cursor: grabbing;
+    }
+
+    .thumb-item:hover {
+      transform: translateY(-2px) scale(1.02);
+      border-color: #38bdf8;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+      z-index: 5;
+    }
+
+    .thumb-item.dragging {
+      opacity: 0.4;
+      transform: scale(0.95);
+    }
+
+    .thumb-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+      background: #1e293b;
+    }
+
+    .thumb-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.2) 60%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 6px;
+    }
+
+    .thumb-item:hover .thumb-overlay {
+      opacity: 1;
+    }
+
+    .thumb-top-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .thumb-bottom-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .thumb-filename {
+      font-size: 0.65rem;
+      color: #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+
+    .badge-mini {
+      background: rgba(37, 99, 235, 0.9);
+      color: #fff;
+      font-size: 0.6rem;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    .overlay-btn {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .overlay-btn:hover {
+      background: #2563eb;
+      border-color: #3b82f6;
+    }
+
+    .overlay-btn.danger:hover {
+      background: #ef4444;
+      border-color: #f87171;
+    }
+
+    /* Hide edit-only elements when locked */
+    .edit-only {
+      display: none !important;
+    }
+
+    body.unlocked .edit-only {
+      display: inline-flex !important;
+    }
+
+    body.unlocked div.edit-only {
+      display: flex !important;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-window {
+      background: #172030;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 540px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      animation: modalIn 0.2s ease-out;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      background: #1f2b3e;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      background: #131b28;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #94a3b8;
+    }
+
+    .form-input {
+      background: #0f172a;
+      border: 1px solid #334155;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: #3b82f6;
+    }
+
+    /* Lightbox Modal */
+    .lightbox-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.94);
+      backdrop-filter: blur(10px);
+      z-index: 150;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .lightbox-backdrop.active {
+      display: flex;
+    }
+
+    .lightbox-img-wrap {
+      position: relative;
+      max-width: 90vw;
+      max-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: 8px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 24px;
+      right: 28px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lightbox-close:hover {
+      background: rgba(239, 68, 68, 0.8);
+    }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lightbox-nav:hover {
+      background: #2563eb;
+    }
+
+    .lightbox-nav.prev { left: 24px; }
+    .lightbox-nav.next { right: 24px; }
+
+    .lightbox-info {
+      margin-top: 16px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .lightbox-info a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .lightbox-info a:hover {
+      text-decoration: underline;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: #1e293b;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastIn 0.25s ease-out;
+    }
+
+    .toast.success { border-color: var(--success); }
+    .toast.danger { border-color: var(--danger); }
+    .toast.warning { border-color: var(--warning); }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .report-textarea {
+      background: #0d121c;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #38bdf8;
+      font-family: monospace;
+      font-size: 0.85rem;
+      padding: 12px;
+      width: 100%;
+      height: 260px;
+      resize: vertical;
+      outline: none;
+    }
+
+    /* Dropdown helper */
+    .move-dropdown {
+      position: absolute;
+      top: 28px;
+      right: 6px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      z-index: 50;
+      min-width: 170px;
+    }
+
+    .move-dropdown button {
+      background: transparent;
+      border: none;
+      color: #e2e8f0;
+      padding: 6px 10px;
+      text-align: left;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .move-dropdown button:hover {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0f17;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f2b3e;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334566;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="title-group">
+        <div class="logo-badge">🏠 PERUÍBE</div>
+        <div>
+          <h1>Organizador de Fotos & Referências de Ambientes</h1>
+          <div style="display: flex; align-items: center; gap: 10px; margin-top: 2px;">
+            <span class="cloud-status"><span class="cloud-dot"></span> Azure Blob Storage Conectado</span>
+            <span id="save-status" style="font-size: 0.75rem; color: #34d399; display: inline-flex; align-items: center; gap: 4px; margin-left: 4px; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 6px;">✓ Salvo automaticamente</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions-bar">
+        <!-- Botão de Trava com Senha -->
+        <button id="lockToggleBtn" class="btn btn-lock locked" onclick="handleLockToggle()">
+          🔒 Bloqueado (Destravar)
+        </button>
+
+        <!-- Ações restritas (só aparecem quando destravado) -->
+        <button class="btn btn-primary edit-only" onclick="openNewCategoryModal()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Novo Local
+        </button>
+        <button class="btn edit-only" onclick="triggerAddPhotos()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          Adicionar Fotos
+        </button>
+
+        <!-- Ações públicas de consulta -->
+        <button class="btn btn-success" onclick="openReportModal()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Gerar Relatório / Lista
+        </button>
+        <button class="btn" onclick="exportJSON()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Exportar JSON
+        </button>
+        <button class="btn edit-only" onclick="triggerImportJSON()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          Importar JSON
+        </button>
+        <button class="btn edit-only" onclick="resetToDefaultState()" title="Restaurar padrão inicial">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats & Filter Bar -->
+  <div class="stats-bar">
+    <div class="stats-content">
+      <div class="stats-items">
+        <div class="stat-pill">Total de Fotos: <strong id="stat-total">0</strong></div>
+        <div class="stat-pill">Locais Criados: <strong id="stat-categories">0</strong></div>
+        <div class="stat-pill">Categorizadas: <strong id="stat-assigned" style="color: #34d399;">0</strong></div>
+        <div class="stat-pill">Banco de Fotos: <strong id="stat-unassigned" style="color: #38bdf8;">0</strong></div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="searchInput" placeholder="Filtrar fotos..." oninput="handleSearch(this.value)">
+        </div>
+
+        <div class="zoom-slider-wrap">
+          <span style="font-size: 0.75rem;">Miniatura:</span>
+          <input type="range" id="sizeSlider" min="90" max="220" value="130" oninput="changeThumbSize(this.value)">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main View -->
+  <main>
+    <!-- Lock State Banner -->
+    <div id="lockBanner" class="lock-banner">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="lockBannerIcon">🔒</span>
+        <span id="lockBannerText">
+          <strong>Modo de Leitura / Visualização:</strong> As fotos e os cards estão protegidos contra alterações acidentais. Para arrastar fotos, criar novos locais ou reordenar cards, clique em <strong>Destravar</strong> e digite a senha.
+        </span>
+      </div>
+      <button id="lockBannerBtn" class="btn btn-warning" style="padding: 4px 12px; font-size: 0.8rem;" onclick="handleLockToggle()">
+        Destravar com Senha
+      </button>
+    </div>
+
+    <!-- Shelf: Unassigned Photos -->
+    <section class="unassigned-section" id="unassigned-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span>📥 Banco de Fotos (Sem Categoria / Disponíveis para Mover)</span>
+          <span class="badge-count active" id="unassigned-count">0 fotos</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="toggleUnassignedView()" id="btn-toggle-unassigned">Recolher</button>
+        </div>
+      </div>
+      <div class="unassigned-grid" id="unassigned-grid" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'Sem Categoria')">
+        <!-- Thumbnails injected via JS -->
+      </div>
+    </section>
+
+    <!-- Cards Section -->
+    <section>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <div style="font-size: 1.1rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <span>📍 Ambientes & Referências</span>
+          <span style="font-size: 0.8rem; font-weight: 400; color: #94a3b8;" id="reorderTip">
+            (Quando destravado, você pode arrastar os cards ou usar as setas ◀ ▶ para reordenar)
+          </span>
+        </div>
+        <button class="btn btn-primary edit-only" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openNewCategoryModal()">
+          + Adicionar Local
+        </button>
+      </div>
+
+      <div class="cards-grid" id="cards-grid">
+        <!-- Location cards injected via JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal: Destravar com Senha -->
+  <div class="modal-backdrop" id="passwordModal">
+    <div class="modal-window" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3>🔒 Autenticação de Edição</h3>
+        <button class="icon-btn" onclick="closePasswordModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: #94a3b8;">
+          Digite a senha de administrador para destravar o modo de edição, permitir mover fotos e reordenar os cards.
+        </p>
+        <div class="form-group">
+          <label>Senha de Acesso:</label>
+          <div style="position: relative;">
+            <input type="password" id="passwordInput" class="form-input" style="width: 100%; padding-right: 40px;" placeholder="Digite a senha..." onkeydown="if(event.key==='Enter') submitPassword()">
+            <button type="button" class="icon-btn" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%);" onclick="togglePasswordVisibility()">👁</button>
+          </div>
+          <span id="passwordError" style="color: #ef4444; font-size: 0.8rem; display: none;">Senha incorreta. Tente novamente.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closePasswordModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="submitPassword()">Destravar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Novo / Editar Local -->
+  <div class="modal-backdrop" id="categoryModal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 id="categoryModalTitle">Novo Local / Referência</h3>
+        <button class="icon-btn" onclick="closeCategoryModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nome do Local (ex: Piscina, Corredor das Plantas, Sala de Jantar, Fachada):</label>
+          <input type="text" id="categoryNameInput" class="form-input" placeholder="Digite o nome do ambiente..." onkeydown="if(event.key==='Enter') saveCategoryModal()">
+        </div>
+        <div class="form-group">
+          <label>Sugestões Rápidas:</label>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;">
+            <button class="btn" style="padding: 4px 8px; font-size: 0.75rem;" onclick="setCategorySuggestion('Corredor das Plantas')">Corredor das Plantas</button>
+            <button class="btn" style="padding: 4px 8px; font-size: 0.75rem;" onclick="setCategorySuggestion('Piscina & Solário')">Piscina & Solário</button>
+            <button class="btn" style="padding: 4px 8px; font-size: 0.75rem;" onclick="setCategorySuggestion('Área Gourmet / Churrasqueira')">Área Gourmet / Churrasqueira</button>
+            <button class="btn" style="padding: 4px 8px; font-size: 0.75rem;" onclick="setCategorySuggestion('Fachada & Garagem')">Fachada & Garagem</button>
+            <button class="btn" style="padding: 4px 8px; font-size: 0.75rem;" onclick="setCategorySuggestion('Sala de Estar')">Sala de Estar</button>
+            <button class="btn" style="padding: 4px 8px; font-size: 0.75rem;" onclick="setCategorySuggestion('Suíte Principal')">Suíte Principal</button>
+            <button class="btn" style="padding: 4px 8px; font-size: 0.75rem;" onclick="setCategorySuggestion('Jardim dos Fundos')">Jardim dos Fundos</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeCategoryModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveCategoryModal()">Salvar Local</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Relatório / Lista Formatada -->
+  <div class="modal-backdrop" id="reportModal">
+    <div class="modal-window" style="max-width: 750px;">
+      <div class="modal-header">
+        <h3>📋 Relatório Formatado de Fotos & Ambientes</h3>
+        <button class="icon-btn" onclick="closeReportModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: #94a3b8;">
+          Abaixo está a listagem de todos os locais na ordem exata definida, com suas fotos e links diretos no Azure Blob Storage:
+        </p>
+        <textarea id="reportTextarea" class="report-textarea" readonly></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeReportModal()">Fechar</button>
+        <button class="btn btn-primary" onclick="copyReportToClipboard()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copiar para Área de Transferência
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Lightbox / Visualização em Alta Resolução -->
+  <div class="lightbox-backdrop" id="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <button class="lightbox-nav prev" onclick="navigateLightbox(-1)">‹</button>
+    <button class="lightbox-nav next" onclick="navigateLightbox(1)">›</button>
+    <div class="lightbox-img-wrap">
+      <img id="lightboxImg" class="lightbox-img" src="" alt="Foto">
+    </div>
+    <div class="lightbox-info">
+      <span id="lightboxName" style="color: #fff; font-weight: 600;"></span>
+      <span id="lightboxCategory" class="badge-count active"></span>
+      <a id="lightboxAzureLink" href="" target="_blank" rel="noopener">Abrir original no Azure ↗</a>
+    </div>
+  </div>
+
+  <!-- Hidden Inputs for Files -->
+  <input type="file" id="importJsonInput" accept=".json" style="display: none;" onchange="handleImportJSON(event)">
+  <input type="file" id="addPhotosInput" accept="image/*" multiple style="display: none;" onchange="handleAddPhotos(event)">
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script>
+    // Senha de edição solicitada pelo usuário
+    const ADMIN_PASSWORD = "Pandora01@";
+
+    // Manifesto padrão com as 57 fotos
+    let defaultPhotos = [
+  {
+    "id": "IMG_6640.jpeg",
+    "name": "IMG_6640.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6640.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6640.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6640.jpeg",
+    "localFull": "Fotos/IMG_6640.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 10821083,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6641.jpeg",
+    "name": "IMG_6641.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6641.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6641.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6641.jpeg",
+    "localFull": "Fotos/IMG_6641.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 11237855,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6642.jpeg",
+    "name": "IMG_6642.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6642.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6642.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6642.jpeg",
+    "localFull": "Fotos/IMG_6642.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8313105,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6643.jpeg",
+    "name": "IMG_6643.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6643.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6643.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6643.jpeg",
+    "localFull": "Fotos/IMG_6643.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 9507228,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6644.jpeg",
+    "name": "IMG_6644.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6644.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6644.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6644.jpeg",
+    "localFull": "Fotos/IMG_6644.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 7870899,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6645.jpeg",
+    "name": "IMG_6645.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6645.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6645.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6645.jpeg",
+    "localFull": "Fotos/IMG_6645.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 7855499,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6646.jpeg",
+    "name": "IMG_6646.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6646.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6646.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6646.jpeg",
+    "localFull": "Fotos/IMG_6646.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 10742449,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6648.jpeg",
+    "name": "IMG_6648.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6648.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6648.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6648.jpeg",
+    "localFull": "Fotos/IMG_6648.jpeg",
+    "width": 3024,
+    "height": 4032,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 6087472,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6649.jpeg",
+    "name": "IMG_6649.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6649.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6649.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6649.jpeg",
+    "localFull": "Fotos/IMG_6649.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 9453910,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6650.jpeg",
+    "name": "IMG_6650.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6650.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6650.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6650.jpeg",
+    "localFull": "Fotos/IMG_6650.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 9879884,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6651.jpeg",
+    "name": "IMG_6651.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6651.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6651.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6651.jpeg",
+    "localFull": "Fotos/IMG_6651.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 7783734,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6652.jpeg",
+    "name": "IMG_6652.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6652.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6652.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6652.jpeg",
+    "localFull": "Fotos/IMG_6652.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 7910492,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6653.jpeg",
+    "name": "IMG_6653.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6653.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6653.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6653.jpeg",
+    "localFull": "Fotos/IMG_6653.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8764666,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6654.jpeg",
+    "name": "IMG_6654.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6654.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6654.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6654.jpeg",
+    "localFull": "Fotos/IMG_6654.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 10601546,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6655.jpeg",
+    "name": "IMG_6655.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6655.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6655.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6655.jpeg",
+    "localFull": "Fotos/IMG_6655.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 10899822,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6656.jpeg",
+    "name": "IMG_6656.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6656.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6656.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6656.jpeg",
+    "localFull": "Fotos/IMG_6656.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 9749855,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6657.jpeg",
+    "name": "IMG_6657.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6657.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6657.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6657.jpeg",
+    "localFull": "Fotos/IMG_6657.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8182566,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6658.jpeg",
+    "name": "IMG_6658.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6658.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6658.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6658.jpeg",
+    "localFull": "Fotos/IMG_6658.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 9446956,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6659.jpeg",
+    "name": "IMG_6659.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6659.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6659.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6659.jpeg",
+    "localFull": "Fotos/IMG_6659.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8148960,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6660.jpeg",
+    "name": "IMG_6660.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6660.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6660.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6660.jpeg",
+    "localFull": "Fotos/IMG_6660.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8429453,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6661.jpeg",
+    "name": "IMG_6661.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6661.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6661.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6661.jpeg",
+    "localFull": "Fotos/IMG_6661.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8007618,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6662.jpeg",
+    "name": "IMG_6662.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6662.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6662.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6662.jpeg",
+    "localFull": "Fotos/IMG_6662.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8198315,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6663.jpeg",
+    "name": "IMG_6663.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6663.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6663.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6663.jpeg",
+    "localFull": "Fotos/IMG_6663.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8530350,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6664.jpeg",
+    "name": "IMG_6664.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6664.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6664.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6664.jpeg",
+    "localFull": "Fotos/IMG_6664.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 11122621,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6665.jpeg",
+    "name": "IMG_6665.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6665.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6665.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6665.jpeg",
+    "localFull": "Fotos/IMG_6665.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8040861,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6666.jpeg",
+    "name": "IMG_6666.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6666.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6666.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6666.jpeg",
+    "localFull": "Fotos/IMG_6666.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8291977,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6667.jpeg",
+    "name": "IMG_6667.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6667.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6667.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6667.jpeg",
+    "localFull": "Fotos/IMG_6667.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 7676900,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6668.jpeg",
+    "name": "IMG_6668.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6668.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6668.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6668.jpeg",
+    "localFull": "Fotos/IMG_6668.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8439072,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6669.jpeg",
+    "name": "IMG_6669.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6669.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6669.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6669.jpeg",
+    "localFull": "Fotos/IMG_6669.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8843646,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6670.jpeg",
+    "name": "IMG_6670.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6670.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6670.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6670.jpeg",
+    "localFull": "Fotos/IMG_6670.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 7583849,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6671.jpeg",
+    "name": "IMG_6671.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6671.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6671.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6671.jpeg",
+    "localFull": "Fotos/IMG_6671.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 9418632,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6672.jpeg",
+    "name": "IMG_6672.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6672.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6672.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6672.jpeg",
+    "localFull": "Fotos/IMG_6672.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8689771,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6673.jpeg",
+    "name": "IMG_6673.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6673.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6673.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6673.jpeg",
+    "localFull": "Fotos/IMG_6673.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 10755203,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6674.jpeg",
+    "name": "IMG_6674.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6674.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6674.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6674.jpeg",
+    "localFull": "Fotos/IMG_6674.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8895975,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6682.jpeg",
+    "name": "IMG_6682.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6682.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6682.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6682.jpeg",
+    "localFull": "Fotos/IMG_6682.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8119336,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6683.jpeg",
+    "name": "IMG_6683.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6683.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6683.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6683.jpeg",
+    "localFull": "Fotos/IMG_6683.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8804135,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6684.jpeg",
+    "name": "IMG_6684.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6684.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6684.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6684.jpeg",
+    "localFull": "Fotos/IMG_6684.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8380256,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6685.jpeg",
+    "name": "IMG_6685.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6685.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6685.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6685.jpeg",
+    "localFull": "Fotos/IMG_6685.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 7089813,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6686.jpeg",
+    "name": "IMG_6686.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6686.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6686.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6686.jpeg",
+    "localFull": "Fotos/IMG_6686.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 7702657,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6687.jpeg",
+    "name": "IMG_6687.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6687.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6687.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6687.jpeg",
+    "localFull": "Fotos/IMG_6687.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8368277,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6688.jpeg",
+    "name": "IMG_6688.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6688.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6688.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6688.jpeg",
+    "localFull": "Fotos/IMG_6688.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 7577830,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6689.jpeg",
+    "name": "IMG_6689.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6689.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6689.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6689.jpeg",
+    "localFull": "Fotos/IMG_6689.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 11591943,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6690.jpeg",
+    "name": "IMG_6690.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6690.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6690.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6690.jpeg",
+    "localFull": "Fotos/IMG_6690.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 13451906,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6691.jpeg",
+    "name": "IMG_6691.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6691.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6691.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6691.jpeg",
+    "localFull": "Fotos/IMG_6691.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 15880967,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6692.jpeg",
+    "name": "IMG_6692.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6692.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6692.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6692.jpeg",
+    "localFull": "Fotos/IMG_6692.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 15080020,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6702.jpeg",
+    "name": "IMG_6702.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6702.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6702.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6702.jpeg",
+    "localFull": "Fotos/IMG_6702.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 9551066,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6703.jpeg",
+    "name": "IMG_6703.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6703.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6703.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6703.jpeg",
+    "localFull": "Fotos/IMG_6703.jpeg",
+    "width": 4032,
+    "height": 3024,
+    "thumbWidth": 600,
+    "thumbHeight": 450,
+    "sizeBytes": 4599265,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6738.jpeg",
+    "name": "IMG_6738.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6738.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6738.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6738.jpeg",
+    "localFull": "Fotos/IMG_6738.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 15044792,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6739.jpeg",
+    "name": "IMG_6739.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6739.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6739.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6739.jpeg",
+    "localFull": "Fotos/IMG_6739.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 13183620,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6749.jpeg",
+    "name": "IMG_6749.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6749.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6749.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6749.jpeg",
+    "localFull": "Fotos/IMG_6749.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 9239447,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6750.jpeg",
+    "name": "IMG_6750.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6750.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6750.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6750.jpeg",
+    "localFull": "Fotos/IMG_6750.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 9349437,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6751.jpeg",
+    "name": "IMG_6751.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6751.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6751.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6751.jpeg",
+    "localFull": "Fotos/IMG_6751.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 7520530,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6752.jpeg",
+    "name": "IMG_6752.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6752.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6752.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6752.jpeg",
+    "localFull": "Fotos/IMG_6752.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 9065245,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6753.jpeg",
+    "name": "IMG_6753.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6753.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6753.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6753.jpeg",
+    "localFull": "Fotos/IMG_6753.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 12662168,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6754.jpeg",
+    "name": "IMG_6754.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6754.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6754.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6754.jpeg",
+    "localFull": "Fotos/IMG_6754.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 8846714,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6755.jpeg",
+    "name": "IMG_6755.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6755.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6755.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6755.jpeg",
+    "localFull": "Fotos/IMG_6755.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 14944095,
+    "category": "Sem Categoria"
+  },
+  {
+    "id": "IMG_6756.jpeg",
+    "name": "IMG_6756.jpeg",
+    "thumbUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/thumbnails/IMG_6756.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "fullUrl": "https://dixty.blob.core.windows.net/others/casa-peruibe/full/IMG_6756.jpeg?se=2035-12-31T23%3A59%3A59Z&sp=racwdl&spr=https&sv=2026-04-06&sr=c&sig=jEZ%2BWnVX1pyP3%2Bp8K5DqSxUze/m0%2Bga7SgYdQdFckf4%3D",
+    "localThumb": "thumbnails/IMG_6756.jpeg",
+    "localFull": "Fotos/IMG_6756.jpeg",
+    "width": 4284,
+    "height": 5712,
+    "thumbWidth": 450,
+    "thumbHeight": 600,
+    "sizeBytes": 19569930,
+    "category": "Sem Categoria"
+  }
+];
+
+    // Estado da Aplicação
+    const STORAGE_KEY = 'casa_peruibe_fotos_state_v1';
+    const UNLOCKED_KEY = 'casa_peruibe_unlocked_session';
+
+    let isUnlocked = sessionStorage.getItem(UNLOCKED_KEY) === 'true';
+
+    let appState = {
+      categories: [
+        'Corredor das Plantas',
+        'Piscina & Solário',
+        'Área Gourmet / Churrasqueira',
+        'Fachada & Garagem',
+        'Sala de Estar',
+        'Suítes e Quartos'
+      ],
+      photos: []
+    };
+
+    let draggedPhotoId = null;
+    let draggedCategoryName = null;
+    let editingCategory = null;
+    let currentLightboxIndex = -1;
+    let filteredSearch = '';
+
+    // Inicialização
+    async function init() {
+      try {
+        const resp = await fetch('fotos_manifest.json');
+        const fetched = await resp.json();
+        if (fetched && fetched.length > 0) {
+          defaultPhotos = fetched;
+        }
+      } catch (err) {
+        console.log('Usando manifesto embutido no index.html');
+      }
+
+      // Tenta carregar estado persistido
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          appState = JSON.parse(saved);
+          // Atualiza links se defaultPhotos tiver URLs atualizadas
+          if (defaultPhotos && defaultPhotos.length > 0) {
+            const map = new Map(defaultPhotos.map(p => [p.id, p]));
+            appState.photos.forEach(p => {
+              if (map.has(p.id)) {
+                p.thumbUrl = map.get(p.id).thumbUrl;
+                p.fullUrl = map.get(p.id).fullUrl;
+              }
+            });
+          }
+        } catch (e) {
+          console.error('Erro ao ler estado do localStorage, restaurando padrão:', e);
+          resetStateFromDefault();
+        }
+      } else {
+        resetStateFromDefault();
+      }
+
+      applyLockState();
+      renderApp();
+    }
+
+    function resetStateFromDefault() {
+      appState = {
+        categories: [
+          'Corredor das Plantas',
+          'Piscina & Solário',
+          'Área Gourmet / Churrasqueira',
+          'Fachada & Garagem',
+          'Sala de Estar',
+          'Suítes e Quartos'
+        ],
+        photos: JSON.parse(JSON.stringify(defaultPhotos))
+      };
+      saveState();
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      updateStats();
+      const saveEl = document.getElementById('save-status');
+      if (saveEl) {
+        const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        saveEl.innerHTML = `✓ Salvo às ${time}`;
+        saveEl.style.transition = 'none';
+        saveEl.style.background = 'rgba(16, 185, 129, 0.35)';
+        setTimeout(() => {
+          saveEl.style.transition = 'background 0.5s ease';
+          saveEl.style.background = 'rgba(16, 185, 129, 0.1)';
+        }, 500);
+      }
+    }
+
+    function updateStats() {
+      const total = appState.photos.length;
+      const assigned = appState.photos.filter(p => p.category && p.category !== 'Sem Categoria').length;
+      const unassigned = total - assigned;
+
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-categories').textContent = appState.categories.length;
+      document.getElementById('stat-assigned').textContent = assigned;
+      document.getElementById('stat-unassigned').textContent = unassigned;
+      document.getElementById('unassigned-count').textContent = `${unassigned} fotos`;
+    }
+
+    // Controle de Bloqueio e Senha
+    function applyLockState() {
+      const body = document.body;
+      const lockBtn = document.getElementById('lockToggleBtn');
+      const banner = document.getElementById('lockBanner');
+      const bannerIcon = document.getElementById('lockBannerIcon');
+      const bannerText = document.getElementById('lockBannerText');
+      const bannerBtn = document.getElementById('lockBannerBtn');
+      const reorderTip = document.getElementById('reorderTip');
+
+      if (isUnlocked) {
+        body.classList.add('unlocked');
+        lockBtn.className = 'btn btn-lock unlocked';
+        lockBtn.innerHTML = '🔓 Modo Edição Ativo (Travar)';
+
+        banner.className = 'lock-banner unlocked-banner';
+        bannerIcon.textContent = '🔓';
+        bannerText.innerHTML = '<strong>Modo de Edição Ativo:</strong> Você pode arrastar fotos entre os cards, reordenar a posição dos cards e criar/excluir ambientes.';
+        bannerBtn.className = 'btn btn-primary';
+        bannerBtn.textContent = 'Bloquear para Leitura';
+
+        if (reorderTip) reorderTip.style.display = 'inline';
+      } else {
+        body.classList.remove('unlocked');
+        lockBtn.className = 'btn btn-lock locked';
+        lockBtn.innerHTML = '🔒 Bloqueado (Destravar)';
+
+        banner.className = 'lock-banner';
+        bannerIcon.textContent = '🔒';
+        bannerText.innerHTML = '<strong>Modo de Leitura / Visualização:</strong> As fotos e os cards estão protegidos contra alterações. Para editar ou mover fotos/cards, clique em <strong>Destravar</strong> e digite a senha.';
+        bannerBtn.className = 'btn btn-warning';
+        bannerBtn.textContent = 'Destravar com Senha';
+
+        if (reorderTip) reorderTip.style.display = 'none';
+      }
+    }
+
+    function handleLockToggle() {
+      if (isUnlocked) {
+        isUnlocked = false;
+        sessionStorage.setItem(UNLOCKED_KEY, 'false');
+        applyLockState();
+        renderApp();
+        showToast('Modo de visualização travado com sucesso.', 'warning');
+      } else {
+        openPasswordModal();
+      }
+    }
+
+    function openPasswordModal() {
+      const modal = document.getElementById('passwordModal');
+      const input = document.getElementById('passwordInput');
+      const errorMsg = document.getElementById('passwordError');
+      input.value = '';
+      errorMsg.style.display = 'none';
+      modal.classList.add('active');
+      setTimeout(() => input.focus(), 100);
+    }
+
+    function closePasswordModal() {
+      document.getElementById('passwordModal').classList.remove('active');
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('passwordInput');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function submitPassword() {
+      const input = document.getElementById('passwordInput');
+      const errorMsg = document.getElementById('passwordError');
+
+      if (input.value === ADMIN_PASSWORD) {
+        isUnlocked = true;
+        sessionStorage.setItem(UNLOCKED_KEY, 'true');
+        closePasswordModal();
+        applyLockState();
+        renderApp();
+        showToast('🔓 Modo de edição desbloqueado com sucesso!', 'success');
+      } else {
+        errorMsg.style.display = 'block';
+        input.select();
+        input.focus();
+      }
+    }
+
+    // Renderização
+    function renderApp() {
+      renderUnassigned();
+      renderCards();
+      updateStats();
+    }
+
+    function renderUnassigned() {
+      const grid = document.getElementById('unassigned-grid');
+      grid.innerHTML = '';
+
+      const unassignedPhotos = appState.photos.filter(p => {
+        const matchesCategory = !p.category || p.category === 'Sem Categoria';
+        const matchesSearch = !filteredSearch || p.name.toLowerCase().includes(filteredSearch.toLowerCase());
+        return matchesCategory && matchesSearch;
+      });
+
+      if (unassignedPhotos.length === 0) {
+        grid.innerHTML = `
+          <div style="color: #64748b; font-size: 0.85rem; width: 100%; text-align: center; padding: 30px;">
+            ${filteredSearch ? 'Nenhuma foto encontrada para a busca.' : '🎉 Todas as fotos já foram organizadas em seus locais!'}
+          </div>
+        `;
+        return;
+      }
+
+      unassignedPhotos.forEach(photo => {
+        grid.appendChild(createThumbElement(photo));
+      });
+    }
+
+    function renderCards() {
+      const cardsGrid = document.getElementById('cards-grid');
+      cardsGrid.innerHTML = '';
+
+      appState.categories.forEach((catName, index) => {
+        const card = document.createElement('div');
+        card.className = 'location-card';
+        card.id = `card-cat-${index}`;
+        card.dataset.category = catName;
+        card.dataset.index = index;
+
+        // Se destravado, permite arrastar o card para reordenar
+        if (isUnlocked) {
+          card.setAttribute('draggable', 'true');
+          card.addEventListener('dragstart', handleCardDragStart);
+          card.addEventListener('dragover', handleCardDragOver);
+          card.addEventListener('dragleave', handleCardDragLeave);
+          card.addEventListener('drop', handleCardDrop);
+          card.addEventListener('dragend', handleCardDragEnd);
+        }
+
+        const photosInCat = appState.photos.filter(p => {
+          const matchesCat = p.category === catName;
+          const matchesSearch = !filteredSearch || p.name.toLowerCase().includes(filteredSearch.toLowerCase());
+          return matchesCat && matchesSearch;
+        });
+
+        const isFirst = index === 0;
+        const isLast = index === appState.categories.length - 1;
+
+        card.innerHTML = `
+          <div class="card-head">
+            ${isUnlocked ? `
+              <div class="card-drag-handle" title="Arraste para reordenar este card">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg>
+              </div>
+            ` : ''}
+
+            <div class="card-title-group" ${isUnlocked ? `onclick="editCategoryName('${escapeQuotes(catName)}')"` : ''}>
+              <span class="card-title ${isUnlocked ? 'clickable' : ''}" title="${isUnlocked ? 'Clique para renomear' : ''}">${escapeHtml(catName)}</span>
+              <span class="badge-count ${photosInCat.length > 0 ? 'active' : ''}">${photosInCat.length}</span>
+            </div>
+
+            <!-- Ações do Card -->
+            <div class="card-actions">
+              ${isUnlocked ? `
+                <!-- Botões de Reordenação ◀ e ▶ -->
+                <button class="icon-btn" onclick="moveCategoryOrder(${index}, -1)" title="Mover para esquerda" ${isFirst ? 'disabled' : ''}>◀</button>
+                <button class="icon-btn" onclick="moveCategoryOrder(${index}, 1)" title="Mover para direita" ${isLast ? 'disabled' : ''}>▶</button>
+                <button class="icon-btn" onclick="editCategoryName('${escapeQuotes(catName)}')" title="Renomear">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+                <button class="icon-btn danger" onclick="deleteCategory('${escapeQuotes(catName)}')" title="Excluir Local">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              ` : `
+                <span style="font-size: 0.7rem; color: #64748b;">${photosInCat.length} foto(s)</span>
+              `}
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="dropzone ${photosInCat.length === 0 ? 'empty' : ''}" 
+                 ondragover="handleDragOver(event)" 
+                 ondragleave="handleDragLeave(event)" 
+                 ondrop="handleDrop(event, '${escapeQuotes(catName)}')">
+              ${photosInCat.length === 0 ? `
+                <div class="empty-placeholder">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                  <span>${isUnlocked ? 'Arraste e solte fotos aqui para este local' : 'Nenhuma foto vinculada neste ambiente'}</span>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+
+        const dropzone = card.querySelector('.dropzone');
+        if (photosInCat.length > 0) {
+          photosInCat.forEach(photo => {
+            dropzone.appendChild(createThumbElement(photo));
+          });
+        }
+
+        cardsGrid.appendChild(card);
+      });
+    }
+
+    // Reordenação de Cards (Setas e Drag & Drop)
+    function moveCategoryOrder(index, direction) {
+      if (!isUnlocked) return;
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= appState.categories.length) return;
+
+      const item = appState.categories.splice(index, 1)[0];
+      appState.categories.splice(targetIndex, 0, item);
+      saveState();
+      renderApp();
+      showToast(`Local <strong>${escapeHtml(item)}</strong> reposicionado!`, 'success');
+    }
+
+    function handleCardDragStart(e) {
+      if (!isUnlocked) { e.preventDefault(); return; }
+      // Só inicia arrasto se não começou dentro de uma foto
+      if (e.target.closest('.thumb-item')) return;
+
+      const card = e.currentTarget;
+      draggedCategoryName = card.dataset.category;
+      card.classList.add('card-dragging');
+      e.dataTransfer.setData('text/card-category', draggedCategoryName);
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleCardDragOver(e) {
+      if (!isUnlocked || !draggedCategoryName) return;
+      e.preventDefault();
+      const card = e.currentTarget;
+      if (card.dataset.category !== draggedCategoryName) {
+        card.classList.add('card-dragover');
+      }
+    }
+
+    function handleCardDragLeave(e) {
+      e.currentTarget.classList.remove('card-dragover');
+    }
+
+    function handleCardDrop(e) {
+      if (!isUnlocked || !draggedCategoryName) return;
+      e.preventDefault();
+      const targetCard = e.currentTarget;
+      targetCard.classList.remove('card-dragover');
+
+      const targetCat = targetCard.dataset.category;
+      if (!targetCat || targetCat === draggedCategoryName) return;
+
+      const fromIndex = appState.categories.indexOf(draggedCategoryName);
+      const toIndex = appState.categories.indexOf(targetCat);
+
+      if (fromIndex !== -1 && toIndex !== -1) {
+        const item = appState.categories.splice(fromIndex, 1)[0];
+        appState.categories.splice(toIndex, 0, item);
+        saveState();
+        renderApp();
+        showToast(`Ordem dos ambientes atualizada!`, 'success');
+      }
+    }
+
+    function handleCardDragEnd(e) {
+      e.currentTarget.classList.remove('card-dragging');
+      document.querySelectorAll('.location-card').forEach(c => c.classList.remove('card-dragover'));
+      draggedCategoryName = null;
+    }
+
+    // Miniaturas (Thumbnails)
+    function createThumbElement(photo) {
+      const item = document.createElement('div');
+      item.className = `thumb-item ${isUnlocked ? 'can-drag' : ''}`;
+      item.id = `thumb-${photo.id}`;
+
+      if (isUnlocked) {
+        item.setAttribute('draggable', 'true');
+      }
+
+      // Usa fallback local se offline ou preferência
+      const imgSrc = photo.thumbUrl || photo.localThumb;
+
+      item.innerHTML = `
+        <img class="thumb-img" src="${imgSrc}" loading="lazy" alt="${escapeHtml(photo.name)}" onerror="this.src='${photo.localThumb}'">
+        <div class="thumb-overlay">
+          <div class="thumb-top-actions">
+            <span class="badge-mini">${photo.category === 'Sem Categoria' ? 'Banco' : 'Alocada'}</span>
+            <div style="display: flex; gap: 4px;">
+              <button class="overlay-btn" title="Ver foto em tela cheia" onclick="openLightbox('${photo.id}')">🔍</button>
+              ${isUnlocked ? `
+                <button class="overlay-btn" title="Mover para outro local..." onclick="openMoveMenu(event, '${photo.id}')">⇄</button>
+                ${photo.category && photo.category !== 'Sem Categoria' ? `
+                  <button class="overlay-btn danger" title="Desvincular (voltar ao banco)" onclick="moveToCategory('${photo.id}', 'Sem Categoria')">✕</button>
+                ` : ''}
+              ` : ''}
+            </div>
+          </div>
+          <div class="thumb-bottom-actions">
+            <div class="thumb-filename" title="${escapeHtml(photo.name)}">${escapeHtml(photo.name)}</div>
+          </div>
+        </div>
+      `;
+
+      // Clique direto na foto quando travado abre o Lightbox
+      item.addEventListener('click', (e) => {
+        if (e.target.closest('button')) return;
+        openLightbox(photo.id);
+      });
+
+      // Eventos Drag quando destravado
+      if (isUnlocked) {
+        item.addEventListener('dragstart', (e) => {
+          draggedPhotoId = photo.id;
+          item.classList.add('dragging');
+          e.dataTransfer.setData('text/plain', photo.id);
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        item.addEventListener('dragend', () => {
+          item.classList.remove('dragging');
+          draggedPhotoId = null;
+        });
+      }
+
+      return item;
+    }
+
+    // Drag & Drop de Fotos
+    function handleDragOver(e) {
+      if (!isUnlocked) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const target = e.currentTarget;
+      if (!target.classList.contains('dragover')) {
+        target.classList.add('dragover');
+      }
+    }
+
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('dragover');
+    }
+
+    function handleDrop(e, targetCategory) {
+      if (!isUnlocked) return;
+      e.preventDefault();
+      e.currentTarget.classList.remove('dragover');
+
+      const photoId = e.dataTransfer.getData('text/plain') || draggedPhotoId;
+      if (!photoId) return;
+
+      moveToCategory(photoId, targetCategory);
+    }
+
+    function moveToCategory(photoId, targetCategory) {
+      if (!isUnlocked) {
+        openPasswordModal();
+        return;
+      }
+
+      const photo = appState.photos.find(p => p.id === photoId);
+      if (!photo) return;
+
+      const oldCat = photo.category || 'Sem Categoria';
+      if (oldCat === targetCategory) return;
+
+      photo.category = targetCategory;
+      saveState();
+      renderApp();
+
+      showToast(`Foto <strong>${escapeHtml(photo.name)}</strong> movida para <strong>${escapeHtml(targetCategory)}</strong>!`, 'success');
+    }
+
+    // Menu Rápido de Mover
+    function openMoveMenu(e, photoId) {
+      e.stopPropagation();
+      if (!isUnlocked) {
+        openPasswordModal();
+        return;
+      }
+
+      closeExistingMoveMenus();
+
+      const btn = e.currentTarget;
+      const thumb = btn.closest('.thumb-item');
+      
+      const menu = document.createElement('div');
+      menu.className = 'move-dropdown';
+      menu.id = 'activeMoveMenu';
+
+      const allDestinations = ['Sem Categoria', ...appState.categories];
+      
+      allDestinations.forEach(dest => {
+        const itemBtn = document.createElement('button');
+        itemBtn.textContent = dest === 'Sem Categoria' ? '📥 Banco de Fotos (Desvincular)' : `📍 ${dest}`;
+        itemBtn.onclick = (ev) => {
+          ev.stopPropagation();
+          moveToCategory(photoId, dest);
+          menu.remove();
+        };
+        menu.appendChild(itemBtn);
+      });
+
+      thumb.appendChild(menu);
+
+      setTimeout(() => {
+        window.addEventListener('click', closeExistingMoveMenus, { once: true });
+      }, 50);
+    }
+
+    function closeExistingMoveMenus() {
+      const existing = document.getElementById('activeMoveMenu');
+      if (existing) existing.remove();
+    }
+
+    // Modais e Categorias
+    function openNewCategoryModal() {
+      if (!isUnlocked) {
+        openPasswordModal();
+        return;
+      }
+      editingCategory = null;
+      document.getElementById('categoryModalTitle').textContent = 'Novo Local / Referência';
+      document.getElementById('categoryNameInput').value = '';
+      document.getElementById('categoryModal').classList.add('active');
+      document.getElementById('categoryNameInput').focus();
+    }
+
+    function editCategoryName(catName) {
+      if (!isUnlocked) {
+        openPasswordModal();
+        return;
+      }
+      editingCategory = catName;
+      document.getElementById('categoryModalTitle').textContent = `Renomear: ${catName}`;
+      document.getElementById('categoryNameInput').value = catName;
+      document.getElementById('categoryModal').classList.add('active');
+      document.getElementById('categoryNameInput').focus();
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.remove('active');
+      editingCategory = null;
+    }
+
+    function setCategorySuggestion(name) {
+      document.getElementById('categoryNameInput').value = name;
+    }
+
+    function saveCategoryModal() {
+      if (!isUnlocked) return;
+      const name = document.getElementById('categoryNameInput').value.trim();
+      if (!name) {
+        showToast('Por favor, informe o nome do local.', 'danger');
+        return;
+      }
+
+      if (editingCategory) {
+        if (editingCategory !== name) {
+          appState.photos.forEach(p => {
+            if (p.category === editingCategory) p.category = name;
+          });
+          const idx = appState.categories.indexOf(editingCategory);
+          if (idx !== -1) appState.categories[idx] = name;
+        }
+      } else {
+        if (appState.categories.includes(name)) {
+          showToast('Já existe um local com esse nome.', 'danger');
+          return;
+        }
+        appState.categories.push(name);
+      }
+
+      saveState();
+      renderApp();
+      closeCategoryModal();
+      showToast(`Local <strong>${escapeHtml(name)}</strong> ${editingCategory ? 'atualizado' : 'adicionado'}!`, 'success');
+    }
+
+    function deleteCategory(catName) {
+      if (!isUnlocked) {
+        openPasswordModal();
+        return;
+      }
+
+      if (!confirm(`Deseja realmente remover o local "${catName}"? As fotos atribuídas a ele voltarão para o Banco de Fotos.`)) {
+        return;
+      }
+
+      appState.photos.forEach(p => {
+        if (p.category === catName) p.category = 'Sem Categoria';
+      });
+
+      appState.categories = appState.categories.filter(c => c !== catName);
+      saveState();
+      renderApp();
+      showToast(`Local "${catName}" removido. Fotos retornaram ao banco.`, 'success');
+    }
+
+    // Lightbox
+    function openLightbox(photoId) {
+      const idx = appState.photos.findIndex(p => p.id === photoId);
+      if (idx === -1) return;
+
+      currentLightboxIndex = idx;
+      updateLightboxContent();
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function updateLightboxContent() {
+      const photo = appState.photos[currentLightboxIndex];
+      if (!photo) return;
+
+      const img = document.getElementById('lightboxImg');
+      img.src = photo.fullUrl || photo.localFull;
+      document.getElementById('lightboxName').textContent = photo.name;
+      document.getElementById('lightboxCategory').textContent = photo.category || 'Sem Categoria';
+      
+      const azureLink = document.getElementById('lightboxAzureLink');
+      azureLink.href = photo.fullUrl || '#';
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+    }
+
+    function navigateLightbox(dir) {
+      currentLightboxIndex += dir;
+      if (currentLightboxIndex < 0) currentLightboxIndex = appState.photos.length - 1;
+      if (currentLightboxIndex >= appState.photos.length) currentLightboxIndex = 0;
+      updateLightboxContent();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (!document.getElementById('lightbox').classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') navigateLightbox(-1);
+      if (e.key === 'ArrowRight') navigateLightbox(1);
+    });
+
+    // Relatório / Lista Formatada
+    function openReportModal() {
+      let report = `==========================================================\n`;
+      report += `RESUMO DE FOTOS & AMBIENTES - CASA PERUÍBE\n`;
+      report += `Armazenamento Azure: dixty.blob.core.windows.net/others/casa-peruibe\n`;
+      report += `Data: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}\n`;
+      report += `==========================================================\n\n`;
+
+      appState.categories.forEach(cat => {
+        const catPhotos = appState.photos.filter(p => p.category === cat);
+        report += `📍 LOCAL: ${cat.toUpperCase()} (${catPhotos.length} fotos)\n`;
+        report += `----------------------------------------------------------\n`;
+        if (catPhotos.length === 0) {
+          report += `  (Nenhuma foto vinculada até o momento)\n\n`;
+        } else {
+          catPhotos.forEach((p, idx) => {
+            report += `  ${idx + 1}. ${p.name}\n`;
+            report += `     Visualizar: ${p.fullUrl}\n`;
+          });
+          report += `\n`;
+        }
+      });
+
+      const unassigned = appState.photos.filter(p => !p.category || p.category === 'Sem Categoria');
+      if (unassigned.length > 0) {
+        report += `📥 FOTOS SEM CATEGORIA DEFINIDA (${unassigned.length} fotos)\n`;
+        report += `----------------------------------------------------------\n`;
+        unassigned.forEach((p, idx) => {
+          report += `  ${idx + 1}. ${p.name}\n`;
+          report += `     Visualizar: ${p.fullUrl}\n`;
+        });
+        report += `\n`;
+      }
+
+      document.getElementById('reportTextarea').value = report;
+      document.getElementById('reportModal').classList.add('active');
+    }
+
+    function closeReportModal() {
+      document.getElementById('reportModal').classList.remove('active');
+    }
+
+    function copyReportToClipboard() {
+      const textarea = document.getElementById('reportTextarea');
+      textarea.select();
+      navigator.clipboard.writeText(textarea.value).then(() => {
+        showToast('Relatório copiado com sucesso para a área de transferência!', 'success');
+      }).catch(err => {
+        showToast('Erro ao copiar texto.', 'danger');
+      });
+    }
+
+    // Adicionar Fotos do Computador
+    function triggerAddPhotos() {
+      if (!isUnlocked) {
+        openPasswordModal();
+        return;
+      }
+      document.getElementById('addPhotosInput').click();
+    }
+
+    function handleAddPhotos(e) {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+
+      let added = 0;
+      files.forEach(file => {
+        const fileId = file.name;
+        if (!appState.photos.some(p => p.id === fileId)) {
+          const blobUrl = URL.createObjectURL(file);
+          appState.photos.push({
+            id: fileId,
+            name: file.name,
+            thumbUrl: blobUrl,
+            fullUrl: blobUrl,
+            localThumb: blobUrl,
+            localFull: blobUrl,
+            sizeBytes: file.size,
+            category: 'Sem Categoria'
+          });
+          added++;
+        }
+      });
+
+      saveState();
+      renderApp();
+      showToast(`${added} novas foto(s) adicionada(s) ao Banco de Fotos!`, 'success');
+      e.target.value = '';
+    }
+
+    // Exportação e Importação JSON
+    function exportJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `fotos_casa_peruibe_organizacao_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Arquivo JSON exportado com sucesso!', 'success');
+    }
+
+    function triggerImportJSON() {
+      if (!isUnlocked) {
+        openPasswordModal();
+        return;
+      }
+      document.getElementById('importJsonInput').click();
+    }
+
+    function handleImportJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          if (imported.categories && imported.photos) {
+            appState = imported;
+            saveState();
+            renderApp();
+            showToast('Organização importada com sucesso!', 'success');
+          } else {
+            showToast('Formato de JSON inválido.', 'danger');
+          }
+        } catch (err) {
+          showToast('Erro ao ler arquivo JSON.', 'danger');
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
+
+    function resetToDefaultState() {
+      if (!isUnlocked) {
+        openPasswordModal();
+        return;
+      }
+      if (confirm('Deseja realmente restaurar a organização inicial padrão?')) {
+        resetStateFromDefault();
+        renderApp();
+        showToast('Organização restaurada para o padrão!', 'success');
+      }
+    }
+
+    // Pesquisa e Ajustes de UI
+    function handleSearch(val) {
+      filteredSearch = val.trim();
+      renderApp();
+    }
+
+    function changeThumbSize(val) {
+      document.documentElement.style.setProperty('--thumb-size', `${val}px`);
+    }
+
+    function toggleUnassignedView() {
+      const grid = document.getElementById('unassigned-grid');
+      const btn = document.getElementById('btn-toggle-unassigned');
+      if (grid.style.display === 'none') {
+        grid.style.display = 'flex';
+        btn.textContent = 'Recolher';
+      } else {
+        grid.style.display = 'none';
+        btn.textContent = 'Expandir';
+      }
+    }
+
+    // Utilitários
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = msg;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[m]);
+    }
+
+    function escapeQuotes(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'");
+    }
+
+    // Iniciar
+    init();
+  </script>
+</body>
+</html>
